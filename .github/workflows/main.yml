@@ -1,4 +1,4 @@
-name: CI/CD Pipeline with Docker Compose
+name: CI/CD Pipeline with Docker Compose and Terraform
 
 on:
   push:
@@ -32,21 +32,17 @@ jobs:
         run: |
           curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verifica la instalación
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+          docker-compose --version
 
       - name: Set up Google Cloud credentials
         run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/service-account.json
 
-      - name: Build and start Docker containers for development
-        run: |
-          docker-compose -f docker-compose.yml -p development up --build -d
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
 
-      - name: Run Terraform apply for development
+      - name: Terraform Init and Apply
         run: |
           cd terraform
           terraform init
@@ -54,24 +50,19 @@ jobs:
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
             -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/service-account.json
 
-      - name: Run docker-compose (Development)
-        uses: hoverkraft-tech/compose-action@v2.0.2
-        with:
-          compose-file: "./docker-compose.yml"
-          up-flags: "--build -d"  # Build images and run in detached mode
-          services: "app"         # Specify services to run, e.g., "app"
+      - name: Build and start Docker containers for development
+        run: |
+          docker-compose -f docker-compose.yml -p development up --build -d
 
       - name: Run tests inside containers
         run: |
-          docker-compose exec app pytest  # Run tests in the "app" service container
+          docker-compose exec app pytest  # Run tests inside the app container
 
       - name: Clean up Docker Compose services
-        uses: hoverkraft-tech/compose-action@v2.0.2
-        with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes --remove-orphans"  # Remove volumes and orphaned services
+        run: |
+          docker-compose down --volumes --remove-orphans
 
   production:
     runs-on: ubuntu-latest
@@ -97,47 +88,34 @@ jobs:
         run: |
           curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verifica la instalación
+          docker-compose --version
 
-      - name: Run Terraform apply
+      - name: Set up Google Cloud credentials
+        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/service-account.json
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init and Apply
         run: |
           cd terraform
           terraform init
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" \
-            -var="google_credentials=$(cat ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }})"
+            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/service-account.json
 
       - name: Build and start Docker containers for production
         run: |
           docker-compose -f docker-compose.yml -p production up --build -d
 
-      - name: Run Terraform apply for production
-        run: |
-          cd terraform
-          terraform init
-          terraform apply -auto-approve \
-            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" \
-            -var="google_credentials=$(cat ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }})"
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          
-      - name: Run docker-compose (Production)
-        uses: hoverkraft-tech/compose-action@v2.0.2
-        with:
-          compose-file: "./docker-compose.yml"
-          up-flags: "--build -d"
-          services: "app"  # Specify the services to run in production
-
       - name: Run tests inside containers
         run: |
-          docker-compose exec app pytest  # Run tests in the "app" service container
+          docker-compose exec app pytest  # Run tests inside the app container
 
       - name: Clean up Docker Compose services
-        uses: hoverkraft-tech/compose-action@v2.0.2
-        with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes --remove-orphans"  # Remove volumes and orphaned services
+        run: |
+          docker-compose down --volumes --remove-orphans
