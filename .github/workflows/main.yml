@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline with Docker Compose
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -46,10 +46,28 @@ jobs:
           terraform init
           terraform apply -auto-approve -var="project_id=${{ secrets.GCP_PROJECT_ID }}"
 
+      - name: Run docker-compose (Development)
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "./docker-compose.yml"
+          up-flags: "--build -d"
+          services: "app"
+
+      - name: Run tests inside containers
+        run: |
+          docker-compose exec app pytest  # Run tests in the "app" service container
+
+      - name: Clean up Docker Compose services
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "./docker-compose.yml"
+          down-flags: "--volumes --remove-orphans" 
+
   production:
     runs-on: ubuntu-latest
     environment: production
     if: startsWith(github.ref, 'refs/tags/v')
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -82,3 +100,20 @@ jobs:
           cd terraform
           terraform init
           terraform apply -auto-approve -var="project_id=${{ secrets.GCP_PROJECT_ID }}"
+
+      - name: Run docker-compose (Production)
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "./docker-compose.yml"
+          up-flags: "--build -d"
+          services: "app"
+
+      - name: Run tests inside containers
+        run: |
+          docker-compose exec app pytest  # Run tests in the "app" service container
+
+      - name: Clean up Docker Compose services
+        uses: hoverkraft-tech/compose-action@v2.0.2
+        with:
+          compose-file: "./docker-compose.yml"
+          down-flags: "--volumes --remove-orphans"
