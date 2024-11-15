@@ -1,0 +1,7 @@
+**/.git/
+**/.vscode/
+**/__pycache__/
+**/.env
+**/local.settings.json
+**/temp_files/
+**/service-account.json
