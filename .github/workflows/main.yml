@@ -50,7 +50,11 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform apply -auto-approve -var="project_id=${{ secrets.GCP_PROJECT_ID }}"
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Run docker-compose (Development)
         uses: hoverkraft-tech/compose-action@v2.0.2
@@ -111,7 +115,11 @@ jobs:
         run: |
           cd terraform
           terraform init
-          terraform apply -auto-approve -var="project_id=${{ secrets.GCP_PROJECT_ID }}"
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
       - name: Run docker-compose (Production)
         uses: hoverkraft-tech/compose-action@v2.0.2
