@@ -8,8 +8,11 @@ on:
       - 'v*.*.*'
 
 jobs:
-  common-setup:
+  development:
     runs-on: ubuntu-latest
+    environment: development
+    if: github.ref == 'refs/heads/develop'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,14 +34,7 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-  development:
-    runs-on: ubuntu-latest
-    environment: development
-    needs: common-setup
-    if: github.ref == 'refs/heads/develop'
-
-    steps:
-      - name: Set environment variables for Docker
+      - name: Set environment variables for Docker (Development)
         run: |
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
 
@@ -57,11 +53,30 @@ jobs:
   production:
     runs-on: ubuntu-latest
     environment: production
-    needs: common-setup
     if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - name: Set environment variables for Docker
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Install docker-compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Set environment variables for Docker (Production)
         run: |
           echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
 
