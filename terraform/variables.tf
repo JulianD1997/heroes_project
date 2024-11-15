@@ -50,3 +50,9 @@ variable "delete_protection_state" {
 
   default = "DELETE_PROTECTION_ENABLED"
 }
+
+variable "service_account_email" {
+  description = "La dirección de correo del servicio de cuenta"
+  type        = string
+  sensitive   = true
+}
