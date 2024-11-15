@@ -56,3 +56,9 @@ variable "service_account_email" {
   type        = string
   sensitive   = true
 }
+
+variable "google_credentials" {
+  description = "Credenciales de Google en formato JSON"
+  type        = string
+  default     = ""
+}

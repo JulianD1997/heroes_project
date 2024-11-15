@@ -13,13 +13,13 @@ terraform {
 }
 
 provider "google" {
-  credentials = file("../service-account.json")
+  credentials = var.google_credentials != "" ? var.google_credentials : null
   project     = var.project_id
   region      = var.region
 }
 
 provider "google-beta" {
-  credentials = file("../service-account.json")
+  credentials = var.google_credentials != "" ? var.google_credentials : null
   project     = var.project_id
   region      = var.region
 }

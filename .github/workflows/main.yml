@@ -99,11 +99,14 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version  # Verifica la instalación
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Set up Google Cloud credentials
-        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
+      - name: Run Terraform apply
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" \
+            -var="google_credentials=$(cat ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }})"
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
@@ -117,10 +120,11 @@ jobs:
           terraform init
           terraform apply -auto-approve \
             -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
+            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" \
+            -var="google_credentials=$(cat ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }})"
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-
+          
       - name: Run docker-compose (Production)
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
