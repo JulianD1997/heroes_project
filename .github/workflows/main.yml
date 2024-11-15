@@ -15,6 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Mostrar el valor del secreto
+        run: |
+          echo "Secret value: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
       - name: Verificar si el secreto es un JSON válido
         run: |
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" | jq empty
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" | jq '.' || echo "No es un JSON válido"
