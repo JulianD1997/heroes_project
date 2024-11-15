@@ -1,3 +1,4 @@
+# Proveedor de Google Cloud
 terraform {
   required_providers {
     google = {
@@ -11,15 +12,16 @@ terraform {
   }
 }
 
-# Configuración del proveedor de Google Cloud
 provider "google" {
-  project = var.project_id
-  region  = var.region
+  credentials = file("../service-account.json")
+  project     = var.project_id
+  region      = var.region
 }
 
 provider "google-beta" {
-  project = var.project_id
-  region  = var.region
+  credentials = file("../service-account.json")
+  project     = var.project_id
+  region      = var.region
 }
 
 # Firestore Database
@@ -34,9 +36,9 @@ resource "google_firestore_database" "database" {
 
 # Storage Bucket
 resource "google_storage_bucket" "firestore_bucket" {
-  name                        = "autonomous-time-418513.firebasestorage.app"
-  location                    = var.region
-  force_destroy               = false
+  name           = "autonomous-time-418513.firebasestorage.app"
+  location       = var.region
+  force_destroy  = false
   uniform_bucket_level_access = true
 }
 
@@ -55,8 +57,8 @@ resource "google_cloudfunctions2_function" "function" {
   
   # Configuración del build
   build_config {
-    runtime     = "python310"
-    entry_point = "generate_thumbnail"
+    runtime      = "python310"
+    entry_point  = "generate_thumbnail"
     source {
       storage_source {
         bucket = google_storage_bucket.firestore_bucket.name
@@ -78,12 +80,12 @@ resource "google_cloudfunctions2_function" "function" {
 
   # Configuración de servicio
   service_config {
-    max_instance_count            = 3
-    min_instance_count            = 1
-    available_memory              = "256M"
-    timeout_seconds               = 60
+    max_instance_count           = 3
+    min_instance_count           = 1
+    available_memory             = "256M"
+    timeout_seconds              = 60
     all_traffic_on_latest_revision = true
-    service_account_email         = "804582757970-compute@developer.gserviceaccount.com"
+    service_account_email        = var.service_account_email
   }
 }
 
