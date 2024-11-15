@@ -1,4 +1,4 @@
-name: CI/CD Pipeline with Docker Compose and Terraform
+name: CI/CD Pipeline with Docker Compose
 
 on:
   push:
@@ -31,21 +31,6 @@ jobs:
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      - name: Set up Google Cloud credentials
-        run: |
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
-          cat /tmp/service-account.json  # Mostrar el contenido del archivo de credenciales (puedes quitar esta línea después de probar)
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/service-account.json
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Print environment variables
-        run: |
-          echo "GCP Project ID: ${{ secrets.GCP_PROJECT_ID }}"
-          echo "Service Account Email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
-
   development:
     runs-on: ubuntu-latest
     environment: development
@@ -53,19 +38,15 @@ jobs:
     if: github.ref == 'refs/heads/develop'
 
     steps:
-      - name: Terraform Init and Plan
+      - name: Set environment variables for Docker
         run: |
-          cd terraform
-          terraform init
-          terraform plan -out=tfplan \
-            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
-          cat tfplan  # Mostrar el plan de Terraform antes de aplicar
+          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
 
       - name: Build and start Docker containers for development
         run: |
           docker-compose -f docker-compose.yml -p development up --build -d
-          docker-compose ps  # Ver los contenedores en ejecución para asegurarse de que todo está bien
 
       - name: Run tests inside containers
         run: |
@@ -82,20 +63,15 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - name: Terraform Init and Apply
+      - name: Set environment variables for Docker
         run: |
-          cd terraform
-          terraform init
-          terraform apply -auto-approve \
-            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="service_account_email=${{ secrets.SERVICE_ACCOUNT_EMAIL }}"
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/service-account.json
+          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
 
       - name: Build and start Docker containers for production
         run: |
           docker-compose -f docker-compose.yml -p production up --build -d
-          docker-compose ps  # Ver los contenedores en ejecución para asegurarse de que todo está bien
 
       - name: Run tests inside containers
         run: |
