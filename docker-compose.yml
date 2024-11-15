@@ -7,8 +7,6 @@ services:
       - "8000:8000"
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: "${GOOGLE_APPLICATION_CREDENTIALS}"
-      GCP_PROJECT_ID: "${GCP_PROJECT_ID}"
-      SERVICE_ACCOUNT_EMAIL: "${SERVICE_ACCOUNT_EMAIL}"
     volumes:
       - .:/code
       - /code/temp_files

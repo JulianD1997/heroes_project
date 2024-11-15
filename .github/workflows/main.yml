@@ -40,9 +40,7 @@ jobs:
     steps:
       - name: Set environment variables for Docker
         run: |
-          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
-          echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
 
       - name: Build and start Docker containers for development
         run: |
@@ -65,8 +63,6 @@ jobs:
     steps:
       - name: Set environment variables for Docker
         run: |
-          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
           echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
 
       - name: Build and start Docker containers for production
