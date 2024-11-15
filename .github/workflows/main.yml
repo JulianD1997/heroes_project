@@ -35,6 +35,8 @@ jobs:
           docker-compose --version
 
       - name: Set environment variables for Docker (Development)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
 
@@ -79,6 +81,7 @@ jobs:
       - name: Set environment variables for Docker (Production)
         run: |
           echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
+          echo "SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
 
       - name: Build and start Docker containers for production
         run: |
