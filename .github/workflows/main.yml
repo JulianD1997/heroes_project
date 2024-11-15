@@ -8,89 +8,13 @@ on:
       - 'v*.*.*'
 
 jobs:
-  development:
+  test_secrets:
     runs-on: ubuntu-latest
-    environment: development
-    if: github.ref == 'refs/heads/develop'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Install docker-compose
+      - name: Display secret
         run: |
-          curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
-      - name: Set environment variables for Docker (Development)
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> $GITHUB_ENV
-
-      - name: Build and start Docker containers for development
-        run: |
-          docker-compose -f docker-compose.yml -p development up --build -d
-
-      - name: Run tests inside containers
-        run: |
-          docker-compose exec app pytest  # Run tests inside the app container
-
-      - name: Clean up Docker Compose services
-        run: |
-          docker-compose down --volumes --remove-orphans
-
-  production:
-    runs-on: ubuntu-latest
-    environment: production
-    if: startsWith(github.ref, 'refs/tags/v')
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Install docker-compose
-        run: |
-          curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
-      - name: Set environment variables for Docker (Production)
-        run: |
-          echo "SERVICE_ACCOUNT_EMAIL=${{ secrets.SERVICE_ACCOUNT_EMAIL }}" >> $GITHUB_ENV
-          echo "SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
-
-      - name: Build and start Docker containers for production
-        run: |
-          docker-compose -f docker-compose.yml -p production up --build -d
-
-      - name: Run tests inside containers
-        run: |
-          docker-compose exec app pytest  # Run tests inside the app container
-
-      - name: Clean up Docker Compose services
-        run: |
-          docker-compose down --volumes --remove-orphans
+          echo "Secret value: ${{ secrets.name }}"
