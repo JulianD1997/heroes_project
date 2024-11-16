@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: 3.10
 
       # 3. Instala las dependencias
       - name: Install dependencies
@@ -32,13 +32,14 @@ jobs:
 
       # 4. Configura el secreto GOOGLE_APPLICATION_CREDENTIALS
       - name: Set up Google credentials
-        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /home/runner/work/$GITHUB_REPOSITORY/$GITHUB_SHA/service-account.json
+        run: |
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
 
       # 5. Ejecuta el contenedor Docker
       - name: Build and run Docker container
         run: |
           docker-compose up --build -d
-          
+
       # 6. Realiza pruebas (si corresponde)
       - name: Run tests
         run: |
