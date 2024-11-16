@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: "${GOOGLE_CREDENTIALS_JSON}"
+      GOOGLE_APPLICATION_CREDENTIALS: "${GOOGLE_APPLICATION_CREDENTIALS}"
     volumes:
       - .:/code
-      - /code/temp_files
+      - ./service-account.json:/code/service-account.json

@@ -8,17 +8,43 @@ on:
       - 'v*.*.*'
 
 jobs:
-  test_secrets:
+  development:
     runs-on: ubuntu-latest
+    environment: development
+    if: github.ref == 'refs/heads/develop'
 
     steps:
+      # 1. Chequea el código desde el repositorio
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Mostrar el valor del secreto
-        run: |
-          echo "Secret value: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+      # 2. Configura Python
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
 
-      - name: Verificar si el secreto es un JSON válido
+      # 3. Instala las dependencias
+      - name: Install dependencies
         run: |
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" | jq '.' || echo "No es un JSON válido"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Configura el secreto GOOGLE_APPLICATION_CREDENTIALS
+      - name: Set up Google credentials
+        run: echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /home/runner/work/$GITHUB_REPOSITORY/$GITHUB_SHA/service-account.json
+
+      # 5. Ejecuta el contenedor Docker
+      - name: Build and run Docker container
+        run: |
+          docker-compose up --build -d
+          
+      # 6. Realiza pruebas (si corresponde)
+      - name: Run tests
+        run: |
+          docker exec <container_name> pytest
+
+      # 7. Detiene el contenedor después de las pruebas
+      - name: Stop Docker container
+        run: |
+          docker-compose down
