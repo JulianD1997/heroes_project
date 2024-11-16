@@ -63,13 +63,44 @@ jobs:
       - name: Build and run Docker container
         run: |
           docker-compose up --build -d
+      
+      # 7. terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
 
-      # 7. Expón el puerto 8000 para acceder a la app
+      - name: Initialize Terraform
+        run: |
+          terraform init
+      
+      # 7.1 terraform plan
+      - name: Plan Terraform
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+          TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          terraform plan -out=tfplan
+
+      #7.2 terraform apply
+      - name: Apply Terraform
+        if: github.ref == 'refs/heads/develop'
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+          TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          terraform apply -auto-approve tfplan
+
+      # 8. Expón el puerto 8000 para acceder a la app
       - name: Expose the application
         run: |
           echo "La aplicación está corriendo en http://localhost:8000"
           
-      # 8. Detiene el contenedor después de las pruebas
+      # 9. Detiene el contenedor después de las pruebas
       - name: Stop Docker container
         run: |
           docker-compose down
