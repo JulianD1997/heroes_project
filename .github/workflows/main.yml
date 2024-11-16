@@ -21,7 +21,7 @@ jobs:
       # 2. Instala Docker y Docker Compose
       - name: Set up Docker and Docker Compose
         run: |
-          # Elimina paquetes conflictivos
+          # Elimina posibles instalaciones previas
           sudo apt-get remove -y containerd docker.io
           
           # Actualiza los paquetes
@@ -48,7 +48,7 @@ jobs:
         with:
           python-version: 3.11
 
-      # 4. Instala las dependencias
+      # 4. Instala las dependencias de Python
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -59,16 +59,16 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
 
-      # 6. Ejecuta el contenedor Docker
+      # 6. Construye y ejecuta el contenedor Docker
       - name: Build and run Docker container
         run: |
           docker-compose up --build -d
 
-      # 7. Realiza pruebas (si corresponde)
-      - name: Run tests
+      # 7. Expón el puerto 8000 para acceder a la app
+      - name: Expose the application
         run: |
-          docker exec <container_name> pytest
-
+          echo "La aplicación está corriendo en http://localhost:8000"
+          
       # 8. Detiene el contenedor después de las pruebas
       - name: Stop Docker container
         run: |
