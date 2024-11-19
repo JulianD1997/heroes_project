@@ -1,102 +1,102 @@
-name: CI/CD Pipeline with Docker Compose
+# name: CI/CD Pipeline with Docker Compose
 
-on:
-  push:
-    branches:
-      - develop
-    tags:
-      - 'v*.*.*'
+# on:
+#   push:
+#     branches:
+#       - develop
+#     tags:
+#       - 'v*.*.*'
 
-jobs:
-  development:
-    runs-on: ubuntu-latest
-    environment: development
-    if: github.ref == 'refs/heads/develop'
+# jobs:
+#   development:
+#     runs-on: ubuntu-latest
+#     environment: development
+#     if: github.ref == 'refs/heads/develop'
 
-    steps:
-      # 1. Chequea el código desde el repositorio
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       # 1. Chequea el código desde el repositorio
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      # # 2. Instala Docker y Docker Compose
-      # - name: Set up Docker and Docker Compose
-      #   run: |
-      #     # Elimina posibles instalaciones previas
-      #     sudo apt-get remove -y containerd docker.io
+#       # # 2. Instala Docker y Docker Compose
+#       # - name: Set up Docker and Docker Compose
+#       #   run: |
+#       #     # Elimina posibles instalaciones previas
+#       #     sudo apt-get remove -y containerd docker.io
           
-      #     # Actualiza los paquetes
-      #     sudo apt-get update
+#       #     # Actualiza los paquetes
+#       #     sudo apt-get update
           
-      #     # Instala dependencias para Docker
-      #     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+#       #     # Instala dependencias para Docker
+#       #     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
           
-      #     # Añade la clave GPG oficial de Docker
-      #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+#       #     # Añade la clave GPG oficial de Docker
+#       #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
           
-      #     # Añade el repositorio de Docker
-      #     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+#       #     # Añade el repositorio de Docker
+#       #     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
           
-      #     # Actualiza el índice de los repositorios
-      #     sudo apt-get update
+#       #     # Actualiza el índice de los repositorios
+#       #     sudo apt-get update
 
-      #     # Instala Docker y Docker Compose
-      #     sudo apt-get install -y docker-ce docker-compose
+#       #     # Instala Docker y Docker Compose
+#       #     sudo apt-get install -y docker-ce docker-compose
 
-      # # 3. Configura Python
-      # - name: Set up Python 3.11
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: 3.11
+#       # # 3. Configura Python
+#       # - name: Set up Python 3.11
+#       #   uses: actions/setup-python@v4
+#       #   with:
+#       #     python-version: 3.11
 
-      # # 4. Instala las dependencias de Python
-      # - name: Install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
+#       # # 4. Instala las dependencias de Python
+#       # - name: Install dependencies
+#       #   run: |
+#       #     python -m pip install --upgrade pip
+#       #     pip install -r requirements.txt
 
-      # # 5. Configura el secreto GOOGLE_APPLICATION_CREDENTIALS
-      # - name: Set up Google credentials
-      #   run: |
-      #     echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
+#       # # 5. Configura el secreto GOOGLE_APPLICATION_CREDENTIALS
+#       # - name: Set up Google credentials
+#       #   run: |
+#       #     echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
 
-      # # 6. Construye y ejecuta el contenedor Docker
-      # - name: Build and run Docker container
-      #   run: |
-      #     docker-compose up --build -d
+#       # # 6. Construye y ejecuta el contenedor Docker
+#       # - name: Build and run Docker container
+#       #   run: |
+#       #     docker-compose up --build -d
       
-      # 7. terraform
-      - name: Initialize Terraform
-        working-directory: ./terraform
-        run: |
-          terraform init
+#       # 7. terraform
+#       - name: Initialize Terraform
+#         working-directory: ./terraform
+#         run: |
+#           terraform init
 
-      - name: Plan Terraform
-        working-directory: ./terraform
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
-          TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-        run: |
-          terraform plan -out=tfplan
+#       - name: Plan Terraform
+#         working-directory: ./terraform
+#         env:
+#           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#           TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#           TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+#           TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+#         run: |
+#           terraform plan -out=tfplan
 
-      - name: Apply Terraform
-        if: github.ref == 'refs/heads/develop'
-        working-directory: ./terraform
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
-          TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-        run: |
-          terraform apply -auto-approve tfplan
+#       - name: Apply Terraform
+#         if: github.ref == 'refs/heads/develop'
+#         working-directory: ./terraform
+#         env:
+#           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#           TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#           TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+#           TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+#         run: |
+#           terraform apply -auto-approve tfplan
 
-      # # 8. Expón el puerto 8000 para acceder a la app
-      # - name: Expose the application
-      #   run: |
-      #     echo "La aplicación está corriendo en http://localhost:8000"
+#       # # 8. Expón el puerto 8000 para acceder a la app
+#       # - name: Expose the application
+#       #   run: |
+#       #     echo "La aplicación está corriendo en http://localhost:8000"
           
-      # # 9. Detiene el contenedor después de las pruebas
-      # - name: Stop Docker container
-      #   run: |
-      #     docker-compose down
+#       # # 9. Detiene el contenedor después de las pruebas
+#       # - name: Stop Docker container
+#       #   run: |
+#       #     docker-compose down
