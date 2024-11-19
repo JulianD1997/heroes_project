@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: "/code/service-account.json"
+    volumes:
+      - .:/code
+      - /tmp/service-account.json:/code/service-account.json
