@@ -1,22 +1,17 @@
-name: Auto assign issue creator
+name: Issue assignment
 
 on:
   issues:
-    types:
-      - opened
-
+    types: [opened, unassigned]
 jobs:
-  auto_assign:
+  auto-assign:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-
     steps:
-      - name: Assign issue creator
-        uses: gustavofreze/auto-assign@1.0.0
+      - name: "Auto-assign issue"
+        uses: pozil/auto-assign-issue@v1
         with:
           assignees: '${{ github.actor }}'
-          github_token: '${{ secrets.GITHUB_TOKEN }}'
-          assignment_options: 'ISSUE'
-          allow_self_assign: 'true'
-          allow_no_assignees: 'false'
+          numOfAssignee: 1
+          allowSelfAssign: true
