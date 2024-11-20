@@ -1,16 +1,22 @@
-name: Auto-Assign Issue Creator
+name: Auto assign issue creator
 
 on:
   issues:
-    types: [opened] # Solo se activa cuando se abre un issue.
+    types:
+      - opened
 
 jobs:
   auto_assign:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
 
     steps:
-    - name: Assign issue to creator
-      uses: actions-ecosystem/action-add-issue-assignees@v1
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        assignees: ${{ github.actor }}
+      - name: Assign issue creator
+        uses: gustavofreze/auto-assign@1.0.0
+        with:
+          assignees: '${{ github.actor }}'
+          github_token: '${{ secrets.GITHUB_TOKEN }}'
+          assignment_options: 'ISSUE'
+          allow_self_assign: 'true'
+          allow_no_assignees: 'false'
