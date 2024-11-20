@@ -2,7 +2,8 @@ name: Issue assignment
 
 on:
   issues:
-    types: [opened, unassigned]
+    types: [opened, unassigned, labeled]
+
 jobs:
   auto-assign:
     runs-on: ubuntu-latest
@@ -15,3 +16,23 @@ jobs:
           assignees: '${{ github.actor }}'
           numOfAssignee: 1
           allowSelfAssign: true
+      
+      - name: "Add issue to project"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          issue_number=${{ github.event.issue.number }}
+          owner="JulianD1997"
+          project_number=1
+          
+          # Obtener el ID del proyecto
+          project_id=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "GraphQL-Features: projects_next_graphql" \
+          -X POST -d '{"query":"query { user(login: \\"'$owner'\\") { projectNext(number: '$project_number') { id } } }"}' \
+          https://api.github.com/graphql | jq -r '.data.user.projectNext.id')
+
+          # Añadir el issue al proyecto
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "GraphQL-Features: projects_next_graphql" \
+          -X POST -d '{"query":"mutation { addProjectNextItem(input: {projectId: \\"'$project_id'\\", contentId: \\"'${{ github.event.issue.node_id }}'\\"}) { projectNextItem { id } } }"}' \
+          https://api.github.com/graphql
