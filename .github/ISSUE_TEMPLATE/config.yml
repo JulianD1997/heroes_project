@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links: []
+issue_templates:
+  - name: "💡 Feature Request (Markdown)"
+    description: "Submit a new feature request using a Markdown-based template"
+    file: features.md
+  - name: "💡 Feature Request (YAML)"
+    description: "Submit a new feature request using a YAML-based interactive template"
+    file: template1.yml
