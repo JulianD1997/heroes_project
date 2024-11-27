@@ -1,0 +1,37 @@
+*   [33m1b27470[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Merge branch 'develop' X x ^x exit Exit quit git merge develop --allow-unrelated-histories
+[31m|[m[32m\[m  
+[31m|[m * [33m01c16cc[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m Initial commit
+[31m|[m * [33m5c365c1[m test2
+[31m|[m * [33m4f6cfbe[m test2
+[31m|[m * [33m4279afc[m test1
+[31m|[m * [33mc72f236[m issue_template1
+[31m|[m * [33me6bb301[m test7
+[31m|[m * [33mdc45902[m test6
+[31m|[m * [33maef1efe[m test5
+[31m|[m * [33m92ce939[m test4
+[31m|[m * [33m196d8a1[m TEST3
+[31m|[m * [33mef46d9a[m test2
+[31m|[m * [33m5972ba0[m test2
+[31m|[m * [33m1f4d301[m settings update
+[31m|[m * [33m87229f4[m new pipeline
+[31m|[m * [33m07f289c[m test1
+[31m|[m * [33me452b0a[m test
+[31m|[m * [33m8d2ca06[m test
+[31m|[m * [33mcaac6fb[m change files
+[31m|[m * [33m82e107e[m update main.yml
+[31m|[m * [33m7452a39[m change main.yml
+[31m|[m * [33mbb70ee4[m change
+[31m|[m * [33m34ace0d[m update dockerfile
+[31m|[m * [33m15e5e26[m change main.yml
+[31m|[m * [33m7c2ee04[m update main.yml
+[31m|[m * [33m2f30c6c[m changes
+[31m|[m * [33m67b4fcc[m change terraform
+[31m|[m * [33md52e4c9[m new changes
+[31m|[m * [33m3be8a37[m config git actions
+[31m|[m *   [33m32c3882[m Merge pull request #1 from JulianD1997/feature/terraform-settings
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m0f8b28b[m Configuración de Terraform con secretos y pipeline actualizado
+[31m|[m [33m|[m * [33m7042d9e[m change config main.tf
+[31m|[m [33m|[m[33m/[m  
+[31m|[m * [33m7e0483d[m add development branch
+* [33m719a65b[m Initial commit
