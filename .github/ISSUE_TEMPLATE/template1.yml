@@ -1,0 +1,63 @@
+name: "💡 Feature Request"
+description: Create a new ticket for a new feature request
+title: "💡 [REQUEST] - <title>"
+labels: 
+  - "feature"
+  - "enhancement"
+body:
+  - type: input
+    id: start_date
+    attributes:
+      label: "Start Date"
+      description: "Start of development (optional)"
+      placeholder: "MM/DD/YYYY"
+    validations:
+      required: false
+  - type: textarea
+    id: implementation_pr
+    attributes:
+      label: "Implementation PR"
+      description: "Link to the pull request that implements this feature"
+      placeholder: "e.g., #12345"
+    validations:
+      required: false
+  - type: textarea
+    id: reference_issues
+    attributes:
+      label: "Reference Issues"
+      description: "Link to related issues"
+      placeholder: "e.g., #45678"
+    validations:
+      required: false
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: "Provide a concise explanation of the feature request"
+      placeholder: "Briefly describe your feature request"
+    validations:
+      required: true
+  - type: textarea
+    id: basic_example
+    attributes:
+      label: "Basic Example"
+      description: "Provide examples to illustrate how this feature will work"
+      placeholder: "Examples of the feature in action"
+    validations:
+      required: true
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: "Drawbacks"
+      description: "List any potential drawbacks or risks associated with this feature"
+      placeholder: "Identify possible challenges or downsides"
+    validations:
+      required: true
+  - type: textarea
+    id: unresolved_question
+    attributes:
+      label: "Unresolved Questions"
+      description: "Highlight any unresolved questions or concerns about this feature"
+      placeholder: "List any open questions or uncertainties"
+    validations:
+      required: false
