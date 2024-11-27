@@ -1,63 +1,47 @@
 name: "💡 Feature Request"
-description: Create a new ticket for a new feature request
-title: "💡 [REQUEST] - <title>"
+description: "Request a new feature or enhancement for the project"
+title: "💡 [Feature] - <Title>"
 labels: 
   - "feature"
   - "enhancement"
 body:
-  - type: input
-    id: start_date
-    attributes:
-      label: "Start Date"
-      description: "Start of development (optional)"
-      placeholder: "MM/DD/YYYY"
-    validations:
-      required: false
-  - type: textarea
-    id: implementation_pr
-    attributes:
-      label: "Implementation PR"
-      description: "Link to the pull request that implements this feature"
-      placeholder: "e.g., #12345"
-    validations:
-      required: false
-  - type: textarea
-    id: reference_issues
-    attributes:
-      label: "Reference Issues"
-      description: "Link to related issues"
-      placeholder: "e.g., #45678"
-    validations:
-      required: false
   - type: textarea
     id: summary
     attributes:
-      label: "Summary"
-      description: "Provide a concise explanation of the feature request"
-      placeholder: "Briefly describe your feature request"
+      label: "Feature Summary"
+      description: "Briefly describe the feature you are requesting."
+      placeholder: "Write a short summary of the feature."
     validations:
       required: true
   - type: textarea
-    id: basic_example
+    id: benefits
     attributes:
-      label: "Basic Example"
-      description: "Provide examples to illustrate how this feature will work"
-      placeholder: "Examples of the feature in action"
+      label: "Benefits"
+      description: "Explain how this feature will add value to the project."
+      placeholder: "Describe why this feature is important."
     validations:
       required: true
   - type: textarea
-    id: drawbacks
+    id: implementation_idea
     attributes:
-      label: "Drawbacks"
-      description: "List any potential drawbacks or risks associated with this feature"
-      placeholder: "Identify possible challenges or downsides"
+      label: "Implementation Idea"
+      description: "Provide any ideas or suggestions for how this feature could be implemented."
+      placeholder: "Share your thoughts on possible solutions."
     validations:
-      required: true
+      required: false
   - type: textarea
-    id: unresolved_question
+    id: potential_drawbacks
     attributes:
-      label: "Unresolved Questions"
-      description: "Highlight any unresolved questions or concerns about this feature"
-      placeholder: "List any open questions or uncertainties"
+      label: "Potential Drawbacks"
+      description: "List any possible risks or negative impacts of this feature."
+      placeholder: "Identify challenges or downsides."
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: "References or Related Issues"
+      description: "Provide links to relevant issues, pull requests, or documentation."
+      placeholder: "e.g., #123 or external documentation links."
     validations:
       required: false
