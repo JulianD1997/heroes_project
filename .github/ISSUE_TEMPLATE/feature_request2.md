@@ -1,4 +1,10 @@
-# 🚀 Feature Request: [Descriptive Feature Title]
+---
+name: 🚀 Feature Request
+about: Suggest a new feature for the project
+title: "[Feature] "
+labels: feature, enhancement
+assignees:
+---
 
 ## 📝 Description
 

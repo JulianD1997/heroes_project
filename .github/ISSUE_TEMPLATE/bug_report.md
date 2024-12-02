@@ -1,4 +1,10 @@
-🐛 Bug Report: [Descriptive Bug Title]
+---
+name: 🐛 Bug Report
+about: Report a problem or unexpected behavior in the project
+title: "[Bug] "
+labels: bug, needs-triage
+assignees:
+---
 
 ## 🐞 Description
 
