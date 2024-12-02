@@ -1,2 +1,14 @@
 blank_issues_enabled: false
-
+contact_links:
+  - name: Report a Bug
+    url: https://github.com/[owner]/[repo]/issues/new?template=bug_report.md
+    about: Use this template to report a bug.
+  - name: Request a Feature
+    url: https://github.com/[owner]/[repo]/issues/new?template=feature_request1.md
+    about: Use this template to suggest a new feature.
+  - name: Improvement Task
+    url: https://github.com/[owner]/[repo]/issues/new?template=feature_request2.md
+    about: Use this template to suggest a new feature template 2.
+  # - name: Documentation Update
+  #   url: https://github.com/[owner]/[repo]/issues/new?template=documentation_update.md
+  #   about: Use this template for documentation changes.
