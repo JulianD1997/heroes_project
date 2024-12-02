@@ -1,5 +1,5 @@
 ---
-name: 🚀 Feature Request
+name: 🚀 Feature Request 2
 about: Suggest a new feature for the project
 title: "[Feature] "
 labels: feature, enhancement
