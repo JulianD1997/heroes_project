@@ -55,9 +55,9 @@ jobs:
       #     pip install -r requirements.txt
 
       # # 5. Configura el secreto GOOGLE_APPLICATION_CREDENTIALS
-      # - name: Set up Google credentials
-      #   run: |
-      #     echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
+      - name: Set up Google credentials
+        run: |
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/service-account.json
 
       # # 6. Construye y ejecuta el contenedor Docker
       # - name: Build and run Docker container
@@ -65,31 +65,31 @@ jobs:
       #     docker-compose up --build -d
 
       # 7. terraform
-      # - name: Initialize Terraform
-      #   working-directory: ./terraform
-      #   run: |
-      #     terraform init
+      - name: Initialize Terraform
+        working-directory: ./terraform
+        run: |
+          terraform init
 
-      # - name: Plan Terraform
-      #   working-directory: ./terraform
-      #   env:
-      #     GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #     TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #     TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
-      #     TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-      #   run: |
-      #     terraform plan -out=tfplan
+      - name: Plan Terraform
+        working-directory: ./terraform
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+          TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          terraform plan -out=tfplan
 
-      # - name: Apply Terraform
-      #   if: github.ref == 'refs/heads/develop'
-      #   working-directory: ./terraform
-      #   env:
-      #     GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #     TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #     TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
-      #     TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-      #   run: |
-      #     terraform apply -auto-approve tfplan
+      - name: Apply Terraform
+        if: github.ref == 'refs/heads/develop'
+        working-directory: ./terraform
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_google_credentials: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+          TF_VAR_service_account_email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+        run: |
+          terraform apply -auto-approve tfplan
 
       # # 8. Expón el puerto 8000 para acceder a la app
       # - name: Expose the application
